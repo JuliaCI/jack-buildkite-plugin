@@ -4,6 +4,10 @@ author: https://github.com/thazhemadam
 requirements: []
 configuration:
   properties:
+    strategy:
+      type: string
+    prefix:
+      type: string
     install:
       type: array
   additionalProperties: false

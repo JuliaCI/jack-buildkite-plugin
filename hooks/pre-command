@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eou pipefail
+
+JACK_REPO="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
+JACK_LIB_DIR="${JACK_REPO}/lib"
+
+echo "--- Instantiating jack's environment"
+julia --project="${JACK_LIB_DIR}" -e "using Pkg; Pkg.instantiate()"
+
+julia --project="${JACK_LIB_DIR}" "${JACK_LIB_DIR}/jack.jl"
