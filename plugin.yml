@@ -1,0 +1,9 @@
+name: Jack
+description: Support transparent downloading and preparation of JLLs for sourcing binary dependencies
+author: https://github.com/thazhemadam
+requirements: []
+configuration:
+  properties:
+    install:
+      type: array
+  additionalProperties: false
