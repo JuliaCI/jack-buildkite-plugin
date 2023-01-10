@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -eou pipefail
+shopt -s extglob
+
+if [ ${#BUILDKITE_PLUGIN_JACK_DEPENDENCIES[@]} -eq 0 ]; then
+    buildkite-agent annotate --style error "Please specify the binary dependencies that must be installed."
+    # identify if each JLL specified in this array is a valid one or not. If it isn't, throw an error.
+end
+
+# globally install JLLPrefixes
+julia --eval 'using Pkg; Pkg.install("JLLPrefixes")'
+
+# try to install each JLL, one by one.
+for JLL in "${BUILDKITE_PLUGIN_JACK_DEPENDENCIES[@]}"; do
+    julia --eval "
+        using Pkg;
+        try
+            Pkg.install(\"$(JLL)\");
+        catch Error
+            @info \"Failed to install $(JLL).\"
+            # rethrow(Error)
+        end
+    "
+end
