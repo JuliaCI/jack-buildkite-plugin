@@ -10,4 +10,12 @@ configuration:
       type: string
     install:
       type: array
+      minimum: 1
+      properties:
+        name:
+          type: string
+        version:
+          type:  string
+      additionalProperties:
+        type: string
   additionalProperties: false

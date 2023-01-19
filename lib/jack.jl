@@ -1,3 +1,4 @@
+using Pkg
 using JLLPrefixes
 
 # Helper to extract buildkite environment arrays
@@ -5,9 +6,13 @@ function extract_env_array(prefix::String)
     envname(idx::Int) = string(prefix, "_", idx)
 
     idx = 0
-    array = String[]
-    while haskey(ENV, envname(idx))
-        push!(array, ENV[envname(idx)])
+    array = PackageSpec[]
+    while haskey(ENV, envname(idx)) || (haskey(ENV, string(envname(idx), "_NAME" )) && haskey(ENV, string(envname(idx), "_VERSION" )))
+        if haskey(ENV, envname(idx))
+            push!(array, PackageSpec(name = ENV[envname(idx)]))
+        elseif (haskey(ENV, string(envname(idx), "_NAME" )) && haskey(ENV, string(envname(idx), "_VERSION" )))
+            push!(array, PackageSpec(name = ENV[string(envname(idx), "_NAME")], version = VersionNumber(ENV[string(envname(idx), "_VERSION")])))
+        end
         idx += 1
     end
     return array

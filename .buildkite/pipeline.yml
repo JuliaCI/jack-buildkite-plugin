@@ -32,6 +32,10 @@ steps:
             # - "make_jll#v1.0.0+0"
             # Just grab the latest version of FFMPEG_jll that we can find
             - "FFMPEG_jll"
+            - name: "GNUMake_jll"
+              version: "v4.4.0+0"
 
     commands: |
+      set -eou pipefail
       ffmpeg -version
+      make --version

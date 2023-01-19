@@ -15,8 +15,9 @@ steps:
           rootfs_treehash: "5b44fab874ec426cad9b80b7dffd2b3f927c9e7f"
       - JuliaCI/jack#v1:
           install:
-            # Install a precise version of `make_jll`
-            - "make_jll#v1.0.0+0"
+            # Install a precise version of `GNUMake_jll`
+            - name: "GNUMake_jll"
+              version: "v4.4.0+0"
             # Just grab the latest version of FFMPEG_jll that we can find
             - "FFMPEG_jll"
     commands: |
