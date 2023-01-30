@@ -1,0 +1,102 @@
+self_test_setup: &self_test_setup
+  post-checkout: |
+    mkdir -p .buildkite/plugins/jack
+    cp -Ra hooks lib plugin.yml README.md .buildkite/plugins/jack/
+
+steps:
+  - group: ":boom: Failing jobs"
+    key: generate-fail
+    steps:
+      - label: ":boom: Non-existent JLL"
+        soft_fail:
+            - exit_status: 1
+        agents:
+          arch: "x86_64"
+          os: "linux"
+          queue: "juliaecosystem"
+        plugins:
+          - staticfloat/metahook#sf/windows_backslashes:
+              <<: *self_test_setup
+          - JuliaCI/julia#v1:
+              version: 1
+          - staticfloat/sandbox#v1:
+              rootfs_url: "https://github.com/staticfloat/Sandbox.jl/releases/download/debian-minimal-927c9e7f/debian_minimal.tar.gz"
+              rootfs_treehash: "5b44fab874ec426cad9b80b7dffd2b3f927c9e7f"
+              verbose: true
+              workspaces:
+                #! Include `/cache` so that `julia` install can properly cache its Julia downloads
+                - "/cache:/cache"
+                #! Include `~/.ssh` so that we get the pre-filled `known_hosts` file
+                - "$${HOME}/.ssh:/root/.ssh"
+
+          - "./.buildkite/plugins/jack":
+              install:
+                - "make_jll" # this is always bound to fail since make's JLL is named GNUMake_jll
+
+        commands: |
+          set -e
+          exit 2
+
+      - label: ":boom: Non-existent JLL Version"
+        soft_fail:
+            - exit_status: 1
+        agents:
+          arch: "x86_64"
+          os: "linux"
+          queue: "juliaecosystem"
+        plugins:
+          - staticfloat/metahook#sf/windows_backslashes:
+              <<: *self_test_setup
+          - JuliaCI/julia#v1:
+              version: 1
+          - staticfloat/sandbox#v1:
+              rootfs_url: "https://github.com/staticfloat/Sandbox.jl/releases/download/debian-minimal-927c9e7f/debian_minimal.tar.gz"
+              rootfs_treehash: "5b44fab874ec426cad9b80b7dffd2b3f927c9e7f"
+              verbose: true
+              workspaces:
+                #! Include `/cache` so that `julia` install can properly cache its Julia downloads
+                - "/cache:/cache"
+                #! Include `~/.ssh` so that we get the pre-filled `known_hosts` file
+                - "$${HOME}/.ssh:/root/.ssh"
+
+          - "./.buildkite/plugins/jack":
+              install:
+                - name: "FFMPEG_jll" 
+                  version: "4.3.2" # FFMPEG_jll has v4.3.1 followed by v4.4.0.
+
+        commands: |
+          set -e
+          exit 2
+
+      - label: ":boom: JLL Version Conflicts"
+        soft_fail:
+            - exit_status: 1
+        agents:
+          arch: "x86_64"
+          os: "linux"
+          queue: "juliaecosystem"
+        plugins:
+          - staticfloat/metahook#sf/windows_backslashes:
+              <<: *self_test_setup
+          - JuliaCI/julia#v1:
+              version: 1
+          - staticfloat/sandbox#v1:
+              rootfs_url: "https://github.com/staticfloat/Sandbox.jl/releases/download/debian-minimal-927c9e7f/debian_minimal.tar.gz"
+              rootfs_treehash: "5b44fab874ec426cad9b80b7dffd2b3f927c9e7f"
+              verbose: true
+              workspaces:
+                #! Include `/cache` so that `julia` install can properly cache its Julia downloads
+                - "/cache:/cache"
+                #! Include `~/.ssh` so that we get the pre-filled `known_hosts` file
+                - "$${HOME}/.ssh:/root/.ssh"
+
+          - "./.buildkite/plugins/jack":
+              install:
+                - name: "FFMPEG_jll" 
+                  version: "4.4.2" # FFMPEG_jll v4.4.2's compat expects libass_jll="0.15.1".
+                - name: "libass_jll"
+                  version: "0.14.0"
+
+        commands: |
+          set -e
+          exit 2

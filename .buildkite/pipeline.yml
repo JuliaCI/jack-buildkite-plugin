@@ -4,3 +4,9 @@ steps:
     agents:
       queue: "juliaecosystem"
       sandbox_capable: true
+
+  - label: ":pipeline: Launch Failing Jobs"
+    command: buildkite-agent pipeline upload .buildkite/fail_jobs.yml
+    agents:
+      queue: "juliaecosystem"
+      sandbox_capable: true
