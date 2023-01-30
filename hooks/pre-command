@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -eou pipefail
+
+echo "--- DEBUGGING ENV DUMP"
+env | grep BUILDKITE_PLUGIN_JACK
+
+JACK_REPO="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
+JACK_LIB_DIR="${JACK_REPO}/lib"
+
+echo "--- Instantiating jack's environment"
+julia --project="${JACK_LIB_DIR}" -e "using Pkg; Pkg.instantiate()"
+
+julia --project="${JACK_LIB_DIR}" "${JACK_LIB_DIR}/jack.jl"
