@@ -20,20 +20,13 @@ end
 
 prefix = get(ENV, "BUILDKITE_PLUGIN_JACK_PREFIX", "/usr/local")
 install = extract_env_array("BUILDKITE_PLUGIN_JACK_INSTALL")
-strategy = get(ENV, "BUILDKITE_PLUGIN_JACK_STRATEGY", "copy")
+strategy = Symbol(get(ENV, "BUILDKITE_PLUGIN_JACK_STRATEGY", "auto"))
 
-@assert strategy in ["copy", "symlink", "hardlink"] """
+@assert strategy in [:copy, :hardlink, :symlink, :auto] """
 Invalid `strategy` specified. Valid values are `copy`, `symlink` and `hardlink`."""
 
 println("--- Collecting Artifacts")
 artifact_paths = collect_artifact_paths(install)
 
 println("--- Deploying strategy for prefix")
-if strategy === "copy"
-    copy_artifact_paths(prefix, artifact_paths)
-elseif strategy === "symlink"
-    symlink_artifact_paths(prefix, artifact_paths)
-elseif strategy === "hardlink"
-    @error "Sorry, hardlink support is still making its way up the hill."
-    # hardlink_artifact_paths(prefix, artifact_paths)
-end
+deploy_artifact_paths(prefix, artifact_paths; strategy)
