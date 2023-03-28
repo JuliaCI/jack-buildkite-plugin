@@ -1,36 +1,50 @@
+#@ load("@ytt:data", "data")
+#@ if data.values.arch == "aarch64":
+#@    ROOTFS_TREEHASH = "12f78298dfda0c0749e0c07fbcac2db3ecde0ef6"
+#@ elif data.values.arch == "x86_64":
+#@    ROOTFS_TREEHASH = "2c01dab897da407467613f0ebd57883b228f3cf1"
+#@ end
+
 self_test_setup: &self_test_setup
   post-checkout: |
     mkdir -p .buildkite/plugins/jack
     cp -Ra hooks lib plugin.yml README.md .buildkite/plugins/jack/
 
 steps:
-  - label: ":bucket: Test jack"
+  - label: #@ ":{}: :bucket: Test jack".format(data.values.os)
     agents:
-      arch: "x86_64"
-      os: "linux"
+      arch: #@ data.values.arch
+      os: #@ data.values.os
+      #@ if data.values.os == "linux":
+      sandbox.jl: true
+      #@ end
       queue: "juliaecosystem"
+
     plugins:
-      # In order to properly use the current repository as a plugin within a pipeline,
-      # we have to first install it into the "vendored plugin" location.
+      #! In order to properly use the current repository as a plugin within a pipeline,
+      #! we have to first install it into the "vendored plugin" location.
       - staticfloat/metahook#sf/windows_backslashes:
           <<: *self_test_setup
       - JuliaCI/julia#v1:
           version: 1
+
+      #@ if data.values.os == "linux":
       - staticfloat/sandbox#v1:
-          rootfs_url: "https://github.com/staticfloat/Sandbox.jl/releases/download/debian-minimal-927c9e7f/debian_minimal.tar.gz"
-          rootfs_treehash: "5b44fab874ec426cad9b80b7dffd2b3f927c9e7f"
+          rootfs_url: #@ "https://github.com/JuliaCI/rootfs-images/releases/download/v5.52/debian_minimal.{}.tar.gz".format(data.values.arch)
+          rootfs_treehash: #@ ROOTFS_TREEHASH 
           verbose: true
           workspaces:
             #! Include `/cache` so that `julia` install can properly cache its Julia downloads
             - "/cache:/cache"
             #! Include `~/.ssh` so that we get the pre-filled `known_hosts` file
             - "$${HOME}/.ssh:/root/.ssh"
+      #@ end
 
       - "./.buildkite/plugins/jack":
           install:
-            # Install a precise version of `make_jll`
-            # - "make_jll#v1.0.0+0"
-            # Just grab the latest version of FFMPEG_jll that we can find
+            #! Install a precise version of `make_jll`
+            #! - "make_jll#v1.0.0+0"
+            #! Just grab the latest version of FFMPEG_jll that we can find
             - "FFMPEG_jll"
             - name: "GNUMake_jll"
               version: "v4.4.0+0"
