@@ -7,8 +7,24 @@ env | grep BUILDKITE_PLUGIN_JACK
 
 JACK_REPO="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
 JACK_LIB_DIR="${JACK_REPO}/lib"
+export PREFIX_DIR=${BUILDKITE_PLUGIN_JACK_PREFIX:-${HOME}/.cache/prefix}
 
 echo "--- Instantiating jack's environment"
 julia --project="${JACK_LIB_DIR}" -e "using Pkg; Pkg.instantiate()"
 
 julia --project="${JACK_LIB_DIR}" "${JACK_LIB_DIR}/jack.jl"
+
+# Add the prefix directory to the path!
+if [[ "${OSTYPE}" != "msys" ]]; then
+    # Export `PATH` such that this `prefix` directory is the first one other plugins find
+    export PATH=${PREFIX_DIR}/bin:"$PATH"
+else
+    # buildkite/agent#872: PATH gets corrupted on Windows
+    # So we pass each element of `$PATH` through `cygpath -w`
+    MSYS_PATH="$(cygpath -w ${PREFIX_DIR}/bin)"
+    IFS=':'
+    for p in $PATH ; do
+        MSYS_PATH="${MSYS_PATH};$(cygpath -w $p)"
+    done
+    export PATH="${MSYS_PATH}"
+fi

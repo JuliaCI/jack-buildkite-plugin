@@ -18,7 +18,7 @@ function extract_env_array(prefix::String)
     return array
 end
 
-prefix = get(ENV, "BUILDKITE_PLUGIN_JACK_PREFIX", "/usr/local")
+prefix = get(ENV, "BUILDKITE_PLUGIN_JACK_PREFIX", joinpath(homedir(), ".cache", "prefix"))
 install = extract_env_array("BUILDKITE_PLUGIN_JACK_INSTALL")
 strategy = Symbol(get(ENV, "BUILDKITE_PLUGIN_JACK_STRATEGY", "auto"))
 
