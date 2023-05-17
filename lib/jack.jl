@@ -25,6 +25,8 @@ strategy = Symbol(get(ENV, "BUILDKITE_PLUGIN_JACK_STRATEGY", "auto"))
 @assert strategy in [:copy, :hardlink, :symlink, :auto] """
 Invalid `strategy` specified. Valid values are `copy`, `symlink` and `hardlink`."""
 
+mkpath(prefix) # create the directory if it doesn't already exist.
+
 println("--- Collecting Artifacts")
 artifact_paths = collect_artifact_paths(install)
 
