@@ -21,12 +21,13 @@ steps:
       queue: "juliaecosystem"
 
     plugins:
+      - JuliaCI/julia#v1:
+          version: 1
+
       #! In order to properly use the current repository as a plugin within a pipeline,
       #! we have to first install it into the "vendored plugin" location.
       - staticfloat/metahook#sf/windows_backslashes:
           <<: *self_test_setup
-      - JuliaCI/julia#v1:
-          version: 1
 
       #@ if data.values.os == "linux":
       - staticfloat/sandbox#v1:

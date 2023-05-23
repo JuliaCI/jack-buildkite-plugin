@@ -26,10 +26,11 @@ steps:
           queue: "juliaecosystem"
 
         plugins:
-          - staticfloat/metahook#sf/windows_backslashes:
-              <<: *self_test_setup
           - JuliaCI/julia#v1:
               version: 1
+
+          - staticfloat/metahook#sf/windows_backslashes:
+              <<: *self_test_setup
 
           #@ if data.values.os == "linux":
           - staticfloat/sandbox#v1:
