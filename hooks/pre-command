@@ -5,10 +5,8 @@ set -eou pipefail
 JACK_REPO="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )" )" &> /dev/null && pwd )"
 JACK_LIB_DIR="${JACK_REPO}/lib"
 
-export PREFIX_DIR=${BUILDKITE_PLUGIN_JACK_PREFIX:-${BUILDKITE_PLUGIN_JULIA_CACHE_DIR:-${HOME}}/jack}
-
-echo "PREFIX_DIR: $PREFIX_DIR"
-
+export BUILDKITE_PLUGIN_JACK_PREFIX=${BUILDKITE_PLUGIN_JACK_PREFIX:-${BUILDKITE_PLUGIN_JULIA_CACHE_DIR:-${HOME}}/jack}
+export BUILDKITE_PLUGIN_JACK_GIT_CLONES_DIR=${BUILDKITE_PLUGIN_JULIA_CACHE_DIR}/jack-clones
 echo "--- Instantiating jack's environment"
 julia --project="${JACK_LIB_DIR}" -e "using Pkg; Pkg.instantiate()"
 
@@ -17,11 +15,11 @@ julia --project="${JACK_LIB_DIR}" "${JACK_LIB_DIR}/jack.jl"
 # Add the prefix directory to the path!
 if [[ "${OSTYPE}" != "msys" ]]; then
     # Export `PATH` such that this `prefix` directory is the first one other plugins find
-    export PATH=${PREFIX_DIR}/bin:"$PATH"
+    export PATH=${BUILDKITE_PLUGIN_JACK_PREFIX}/bin:"$PATH"
 else
     # buildkite/agent#872: PATH gets corrupted on Windows
     # So we pass each element of `$PATH` through `cygpath -w`
-    MSYS_PATH="$(cygpath -w ${PREFIX_DIR}/bin)"
+    MSYS_PATH="$(cygpath -w ${BUILDKITE_PLUGIN_JACK_PREFIX}/bin)"
     IFS=':'
     for p in $PATH ; do
         MSYS_PATH="${MSYS_PATH};$(cygpath -w $p)"
