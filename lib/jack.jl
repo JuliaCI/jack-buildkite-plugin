@@ -1,5 +1,4 @@
-using Pkg
-using JLLPrefixes
+using Pkg, JLLPrefixes
 
 # Helper to extract buildkite environment arrays
 function extract_env_array(prefix::String)
@@ -18,15 +17,21 @@ function extract_env_array(prefix::String)
     return array
 end
 
-prefix = get(ENV, "BUILDKITE_PLUGIN_JACK_PREFIX", "/usr/local")
+prefix = get(ENV, "BUILDKITE_PLUGIN_JACK_PREFIX", joinpath(homedir(), "jack"))
+clones_dir = get(ENV, "BUILDKITE_PLUGIN_JACK_GIT_CLONES_DIR", joinpath(prefix, "..", "jack-clones"))
 install = extract_env_array("BUILDKITE_PLUGIN_JACK_INSTALL")
 strategy = Symbol(get(ENV, "BUILDKITE_PLUGIN_JACK_STRATEGY", "auto"))
+
+# Tell JLLPrefixes to store its git clones in `clones_dir`
+JLLPrefixes.set_git_clones_dir!(clones_dir)
 
 @assert strategy in [:copy, :hardlink, :symlink, :auto] """
 Invalid `strategy` specified. Valid values are `copy`, `symlink` and `hardlink`."""
 
+mkpath(prefix) # create the directory if it doesn't already exist.
+
 println("--- Collecting Artifacts")
 artifact_paths = collect_artifact_paths(install)
 
-println("--- Deploying strategy for prefix")
+println("--- Deploying artifacts", prefix, strategy)
 deploy_artifact_paths(prefix, artifact_paths; strategy)

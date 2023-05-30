@@ -1,12 +1,22 @@
 steps:
   - label: ":pipeline: Launch tests"
-    command: buildkite-agent pipeline upload .buildkite/runtests.yml
+    plugins:
+    - JuliaCI/ytt:
+        version: "0.43.0"
+    command: bash .buildkite/commands/runtests.sh .buildkite/runtests.yml
     agents:
+      os: "linux"
+      arch: "x86_64"
       queue: "juliaecosystem"
       sandbox_capable: true
 
   - label: ":pipeline: Launch Failing Jobs"
-    command: buildkite-agent pipeline upload .buildkite/fail_jobs.yml
+    plugins:
+    - JuliaCI/ytt:
+        version: "0.43.0"
+    command: bash .buildkite/commands/runtests.sh .buildkite/fail_jobs.yml
     agents:
+      os: "linux"
+      arch: "x86_64"
       queue: "juliaecosystem"
       sandbox_capable: true
