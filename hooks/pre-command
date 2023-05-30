@@ -10,6 +10,11 @@ export BUILDKITE_PLUGIN_JACK_GIT_CLONES_DIR=${BUILDKITE_PLUGIN_JULIA_CACHE_DIR}/
 echo "--- Instantiating jack's environment"
 julia --project="${JACK_LIB_DIR}" -e "using Pkg; Pkg.instantiate()"
 
+# Work around https://github.com/JuliaPackaging/JLLPrefixes.jl/issues/18
+if [[ "${OSTYPE}" == "msys" ]]; then
+    export BUILDKITE_PLUGIN_JACK_STRATEGY="${BUILDKITE_PLUGIN_JACK_STRATEGY:-copy}"
+fi
+
 julia --project="${JACK_LIB_DIR}" "${JACK_LIB_DIR}/jack.jl"
 
 # Add the prefix directory to the path!

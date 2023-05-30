@@ -33,5 +33,5 @@ mkpath(prefix) # create the directory if it doesn't already exist.
 println("--- Collecting Artifacts")
 artifact_paths = collect_artifact_paths(install)
 
-println("--- Deploying strategy for prefix")
+println("--- Deploying artifacts", prefix, strategy)
 deploy_artifact_paths(prefix, artifact_paths; strategy)
