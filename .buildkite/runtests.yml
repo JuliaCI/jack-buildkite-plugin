@@ -19,9 +19,6 @@ steps:
       sandbox.jl: true
       #@ end
       queue: "juliaecosystem"
-    env:
-      OS: #@ data.values.os
-      ARCH: #@ data.values.arch
 
     plugins:
       - JuliaCI/julia#v1:
@@ -53,19 +50,19 @@ steps:
             - "FFMPEG_jll"
             - name: "GNUMake_jll"
               version: "v4.4.0+0"
-
-            #! For now, this JLL is `linux-only`
-            #@ if data.values.os == "linux":
-            - name: "GCC_jll"
-              url: "https://github.com/staticfloat/GCC_jll.jl"
-              rev: "8d632ad5f2e2c419a4e67da14bf1609ab0291b24"
-            #@ end
+            - name: "XZ_jll"
+              version: "v5.4.3+1"
+              subprefix: "xz"
 
     commands: |
       set -eou pipefail
       ffmpeg -version
       make --version
 
-      if [[ "$${OS}" == "linux" ]]; then
-        $${ARCH}-linux-gnu-gcc --version
+      # Test that `XZ_jll` is in its correct place
+      DEPLOY_PATH=$$(dirname $$(dirname $$(which ffmpeg)))
+      EXE=""
+      if [[ "$${BUILDKITE_AGENT_META_DATA_OS}" == "windows" ]]; then
+        EXE=".exe"
       fi
+      $${DEPLOY_PATH}/xz/bin/xz$${EXE} --version
