@@ -15,7 +15,11 @@ configuration:
         name:
           type: string
         version:
-          type:  string
+          type: string
+        url:
+          type: string
+        rev:
+          type: string
       additionalProperties:
         type: string
   additionalProperties: false

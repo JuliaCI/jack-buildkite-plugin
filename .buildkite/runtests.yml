@@ -19,6 +19,9 @@ steps:
       sandbox.jl: true
       #@ end
       queue: "juliaecosystem"
+    env:
+      OS: #@ data.values.os
+      ARCH: #@ data.values.arch
 
     plugins:
       - JuliaCI/julia#v1:
@@ -46,11 +49,23 @@ steps:
             #! Install a precise version of `make_jll`
             #! - "make_jll#v1.0.0+0"
             #! Just grab the latest version of FFMPEG_jll that we can find
+            #! Install a specific version of GCC_jll from a fork
             - "FFMPEG_jll"
             - name: "GNUMake_jll"
               version: "v4.4.0+0"
+
+            #! For now, this JLL is `linux-only`
+            #@ if data.values.os == "linux":
+            - name: "GCC_jll"
+              url: "https://github.com/staticfloat/GCC_jll.jl"
+              rev: "8d632ad5f2e2c419a4e67da14bf1609ab0291b24"
+            #@ end
 
     commands: |
       set -eou pipefail
       ffmpeg -version
       make --version
+
+      if [[ "$${OS}" == "linux" ]]; then
+        $${ARCH}-linux-gnu-gcc --version
+      fi
