@@ -46,11 +46,23 @@ steps:
             #! Install a precise version of `make_jll`
             #! - "make_jll#v1.0.0+0"
             #! Just grab the latest version of FFMPEG_jll that we can find
+            #! Install a specific version of GCC_jll from a fork
             - "FFMPEG_jll"
             - name: "GNUMake_jll"
               version: "v4.4.0+0"
+            - name: "XZ_jll"
+              version: "v5.4.3+1"
+              subprefix: "xz"
 
     commands: |
       set -eou pipefail
       ffmpeg -version
       make --version
+
+      # Test that `XZ_jll` is in its correct place
+      DEPLOY_PATH=$$(dirname $$(dirname $$(which ffmpeg)))
+      EXE=""
+      if [[ "$${BUILDKITE_AGENT_META_DATA_OS}" == "windows" ]]; then
+        EXE=".exe"
+      fi
+      $${DEPLOY_PATH}/xz/bin/xz$${EXE} --version
