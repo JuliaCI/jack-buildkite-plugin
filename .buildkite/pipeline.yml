@@ -8,7 +8,6 @@ steps:
       os: "linux"
       arch: "x86_64"
       queue: "juliaecosystem"
-      sandbox_capable: true
 
   - label: ":pipeline: Launch Failing Jobs"
     plugins:
@@ -19,4 +18,3 @@ steps:
       os: "linux"
       arch: "x86_64"
       queue: "juliaecosystem"
-      sandbox_capable: true
