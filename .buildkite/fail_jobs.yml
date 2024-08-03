@@ -21,7 +21,7 @@ steps:
           arch: #@ data.values.arch
           os: #@ data.values.os
           #@ if data.values.os == "linux":
-          sandbox.jl: true
+          sandbox_capable: true
           #@ end
           queue: "juliaecosystem"
 
@@ -60,7 +60,7 @@ steps:
           arch: #@ data.values.arch
           os: #@ data.values.os
           #@ if data.values.os == "linux":
-          sandbox.jl: true
+          sandbox_capable: true
           #@ end
           queue: "juliaecosystem"
 
@@ -99,7 +99,7 @@ steps:
           arch: #@ data.values.arch
           os: #@ data.values.os
           #@ if data.values.os == "linux":
-          sandbox.jl: true
+          sandbox_capable: true
           #@ end
           queue: "juliaecosystem"
 
