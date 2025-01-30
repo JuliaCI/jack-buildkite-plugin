@@ -11,7 +11,7 @@ self_test_setup: &self_test_setup
     cp -Ra hooks lib plugin.yml README.md .buildkite/plugins/jack/
 
 steps:
-  - label: #@ ":{}: :bucket: Test jack".format(data.values.os)
+  - label: #@ ":{}: :bucket: Test jack (julia {})".format(data.values.os, data.values.julia_version)
     agents:
       arch: #@ data.values.arch
       os: #@ data.values.os
@@ -22,7 +22,7 @@ steps:
 
     plugins:
       - JuliaCI/julia#v1:
-          version: 1
+          version: #@ data.values.julia_version
 
       #! In order to properly use the current repository as a plugin within a pipeline,
       #! we have to first install it into the "vendored plugin" location.
@@ -30,7 +30,7 @@ steps:
           <<: *self_test_setup
 
       #@ if data.values.os == "linux":
-      - staticfloat/sandbox#v1:
+      - staticfloat/sandbox#v2:
           rootfs_url: #@ "https://github.com/JuliaCI/rootfs-images/releases/download/v5.52/debian_minimal.{}.tar.gz".format(data.values.arch)
           rootfs_treehash: #@ ROOTFS_TREEHASH 
           verbose: true
