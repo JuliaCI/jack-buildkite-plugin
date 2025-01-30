@@ -30,7 +30,7 @@ steps:
           <<: *self_test_setup
 
       #@ if data.values.os == "linux":
-      - staticfloat/sandbox#v1:
+      - staticfloat/sandbox#v2:
           rootfs_url: #@ "https://github.com/JuliaCI/rootfs-images/releases/download/v5.52/debian_minimal.{}.tar.gz".format(data.values.arch)
           rootfs_treehash: #@ ROOTFS_TREEHASH 
           verbose: true
